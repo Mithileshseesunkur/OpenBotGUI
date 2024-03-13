@@ -5,7 +5,9 @@ root = tk.Tk()
 
 # title of window
 root.title("Testing input")
-inputs = ["x", "y", "z", "theta","anything","Ruj"]
+
+inputs = ["x", "y", "z", "theta","anything","more inputs"]
+
 
 # initial settings
 entry_fields = []  # List to store entry fields
