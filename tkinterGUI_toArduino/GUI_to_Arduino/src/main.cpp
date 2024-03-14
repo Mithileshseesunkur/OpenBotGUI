@@ -1,18 +1,53 @@
 #include <Arduino.h>
 
 // put function declarations here:
-int myFunction(int, int);
+#define yellow 13
+#define red 12
+#define blue 8
+#define white 7
 
-void setup() {
+
+int countYellow=1;
+int countBlue;
+
+unsigned long startMillis;
+unsigned long millisYellowOn;
+unsigned long millisYellowOff;
+unsigned long millisBlueOn;
+unsigned long millisBlueOff;
+unsigned long millisRedOn;
+unsigned long millisRedOff;
+unsigned long millisWhiteOn;
+unsigned long millisWhiteOff;
+unsigned long previousMillis=0;
+const unsigned long period = 500;
+
+void setup() 
+{
   // put your setup code here, to run once:
-  int result = myFunction(2, 3);
-}
+  pinMode(yellow,OUTPUT);
+  pinMode(blue,OUTPUT);
+  pinMode(red,OUTPUT);
+  pinMode(white,OUTPUT);
+  
+  Serial.begin(9600);
 
+}
 void loop() {
   // put your main code here, to run repeatedly:
+  digitalWrite(yellow,HIGH);
+  
+  
+  
 }
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
-}
+    
+    
+  
+
+  
+
+
+
+
+
