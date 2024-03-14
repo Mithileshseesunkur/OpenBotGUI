@@ -1,12 +1,21 @@
 import tkinter as tk
 import numpy as np
+import serial
+import time
 
 root = tk.Tk()
 
 # title of window
 root.title("Testing input")
 
-inputs = ["x", "y", "z", "theta","anything","more inputs"]
+#change according to inputs
+inputs = ["yellow", "blue", "red", "white"]
+
+#open serial connection
+ser=serial.Serial('COM3',9600)
+
+#wait for arduino to reset
+time.sleep(1)
 
 
 # initial settings
@@ -26,12 +35,15 @@ def send_input(index):  # send inputs selected
     # initialise error msg
     error_msg = ""
 
-    # see if value to
+    #try except errors
     try:
         input_error_message.config(text="")
         value = float(entry_fields[index].get())
         print(inputs[index] + ":", value)
-        # Here you can send the value to Arduino
+        # Here commands to send the value to Arduino
+        value_to_arduino=bytes(value)
+        ser.write(value_to_arduino)
+
     except ValueError:
         input_error_message.config(text="")
         error_msg = "Invalid format in " + inputs[index]
@@ -42,7 +54,8 @@ def send_input(index):  # send inputs selected
         input_error_message.config(fg="red")
 
 
-def send_all():
+def send_all(): #send all inputs at once
+
     children = frame_error.winfo_children()
     for widget in children[1:]:
         widget.destroy()
@@ -59,8 +72,7 @@ def send_all():
 
         except ValueError:
             send_all_error_msg = "Invalid format in " + inputs[j]
-
-            error_count += 1
+            #error_count += 1
             send_all_input_error_message = tk.Label(frame_error)
             send_all_input_error_message.config(text=send_all_error_msg,fg="red")
             send_all_input_error_message.grid(row=error_count, column=0, sticky="w", padx=10, pady=5)
@@ -68,7 +80,8 @@ def send_all():
     # error_count=0
 
 
-def clear_all():
+def clear_all():# clear all fields
+
     for entry_field in entry_fields:
         entry_field.delete(0, tk.END)
     # Clear error message label
@@ -127,3 +140,5 @@ input_error_message = tk.Label(frame_error)
 send_all_input_error_message = tk.Label(frame_error)
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 root.mainloop()
+
+ser.close()

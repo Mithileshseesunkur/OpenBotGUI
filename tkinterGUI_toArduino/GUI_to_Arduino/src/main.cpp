@@ -22,6 +22,8 @@ unsigned long millisWhiteOff;
 unsigned long previousMillis=0;
 const unsigned long period = 500;
 
+int received_data;
+
 void setup() 
 {
   // put your setup code here, to run once:
@@ -35,7 +37,11 @@ void setup()
 }
 void loop() {
   // put your main code here, to run repeatedly:
-  digitalWrite(yellow,HIGH);
+  while (!Serial.available());
+
+  received_data=Serial.readString().toInt();
+
+  Serial.print(received_data);
   
   
   
