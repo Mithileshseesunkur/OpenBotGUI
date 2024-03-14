@@ -95,7 +95,7 @@ for i in inputs:
     button.grid(row=row_no, column=2, sticky="W", padx=10, pady=5)
     entry_fields.append(entry_field)
     row_no += 1
-# end of for loop
+# end of for loop to create GUI
 
 
 # send all inputs button
