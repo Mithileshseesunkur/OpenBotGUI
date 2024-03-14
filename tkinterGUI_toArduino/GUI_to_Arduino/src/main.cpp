@@ -36,15 +36,23 @@ void setup()
 
 }
 void loop() {
-  // put your main code here, to run repeatedly:
-  while (!Serial.available());
+  if (Serial.available()>0) {
+    String received_data = Serial.readStringUntil('\n'); // Read the string until newline character
+    float received_float = received_data.toFloat(); // Convert string to float
+    Serial.print("Received float: ");
+    Serial.println(received_float, 4); // Print the received float with 4 decimal places
+    
+    if (received_float>0)
+    {
+      digitalWrite(yellow,HIGH);
+      digitalWrite(blue,LOW);
+      digitalWrite(red,HIGH);
+      digitalWrite(white,LOW);
+    }
 
-  received_data=Serial.readString().toInt();
 
-  Serial.print(received_data);
-  
-  
-  
+
+  }
 }
 
     

@@ -2,6 +2,7 @@ import tkinter as tk
 import numpy as np
 import serial
 import time
+import struct
 
 root = tk.Tk()
 
@@ -41,8 +42,10 @@ def send_input(index):  # send inputs selected
         value = float(entry_fields[index].get())
         print(inputs[index] + ":", value)
         # Here commands to send the value to Arduino
-        value_to_arduino=bytes(value)
-        ser.write(value_to_arduino)
+        value_bytes=struct.pack('f',value)
+        print(value_bytes)
+
+        ser.write(value_bytes)
 
     except ValueError:
         input_error_message.config(text="")
@@ -139,6 +142,8 @@ input_error_message = tk.Label(frame_error)
 # send all error message label
 send_all_input_error_message = tk.Label(frame_error)
 # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
 root.mainloop()
 
 ser.close()
+
