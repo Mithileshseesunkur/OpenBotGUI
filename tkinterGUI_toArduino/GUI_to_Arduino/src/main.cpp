@@ -7,22 +7,13 @@
 #define white 7
 
 
+const byte MAX_NUM_ELEMENTS = 10;  // Maximum number of elements in the array
+float received_data[MAX_NUM_ELEMENTS];
+
+
 int countYellow=1;
 int countBlue;
 
-unsigned long startMillis;
-unsigned long millisYellowOn;
-unsigned long millisYellowOff;
-unsigned long millisBlueOn;
-unsigned long millisBlueOff;
-unsigned long millisRedOn;
-unsigned long millisRedOff;
-unsigned long millisWhiteOn;
-unsigned long millisWhiteOff;
-unsigned long previousMillis=0;
-const unsigned long period = 500;
-
-int received_data;
 
 void setup() 
 {
@@ -33,10 +24,21 @@ void setup()
   pinMode(white,OUTPUT);
   
   Serial.begin(9600);
+
+  //initializing received_data with zeros
+  for (int i = 0; i < MAX_NUM_ELEMENTS; i++) {
+    received_data[i] = 0;
+  }
+
+  //wait a bit..
   delay(400);
+  
 
 }
 void loop() {
+  
+  
+  /*
   if (Serial.available() >= sizeof(float)) 
   {
     // Read the incoming bytes into a float variable
@@ -63,6 +65,49 @@ void loop() {
       digitalWrite(white,LOW);
     }
   }
+  */
+  if (Serial.available() > 0) {  // Check if data is available
+    digitalWrite(red,HIGH);
+    // Read the number of elements
+    byte num_elements = Serial.read();
+    delay(500);
+    digitalWrite(red,LOW);
+
+    // Ensure the number of elements does not exceed the array size
+    if (num_elements <= MAX_NUM_ELEMENTS)//&& Serial.available() >= 4 * num_elements)
+    {
+      digitalWrite(white,HIGH);
+      delay(500);
+      // Read and reconstruct each float
+      for (int i = 0; i < num_elements; i++) 
+      {
+        digitalWrite(blue,HIGH);
+        byte buffer[4];
+        Serial.readBytes(buffer, 4);
+        received_data[i] = *((float*)buffer);
+        digitalWrite(blue,LOW);
+
+      }
+      delay(500);
+      digitalWrite(white,LOW);
+    }
+  }
+
+  if (received_data[0]>40.0)
+  {
+    digitalWrite(yellow,HIGH);
+  }
+  
+
+  if (received_data[1]>40.0)
+  {
+    digitalWrite(blue,HIGH);
+  }
+  else
+  {
+    digitalWrite(blue,LOW);
+  }
+ 
 }
 
     
