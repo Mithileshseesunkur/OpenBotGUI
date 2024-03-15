@@ -9,22 +9,26 @@ root = tk.Tk()
 # title of window
 root.title("Testing input")
 
-#change according to inputs
-inputs = ["yellow", "blue", "red", "white"]
+# change according to inputs
+inputs = np.array(["yellow", "blue", "red", "white"])
+print(inputs)
 
-#open serial connection
-ser=serial.Serial('COM17',9600)
+# open serial connection
+ser = serial.Serial('COM17', 9600)
 
-#wait for arduino to reset
+# wait for arduino to reset
 time.sleep(1)
 
-
 # initial settings
-entry_fields = []  # List to store entry fields
+# to_send = []  # List to store entry fields
+shape = inputs.shape
+to_send = []
+print(to_send)
+
 error_message_matrix = []
 
 
-#functions down>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# functions down>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 def send_input(index):  # send inputs selected
 
     # refresh frame_error everytime this func is called
@@ -36,17 +40,18 @@ def send_input(index):  # send inputs selected
     # initialise error msg
     error_msg = ""
 
-    #try except errors
+    # try except errors
     try:
         input_error_message.config(text="")
-        value = float(entry_fields[index].get())
+        value = float(to_send[index].get())
         print(inputs[index] + ":", value)
         # Here commands to send the value to Arduino
-        value_bytes=struct.pack('f',value)
-        #value_bytes= value.to_bytes(2, byteorder='big')
+        value_bytes = struct.pack('f', value)
+        # value_bytes= value.to_bytes(2, byteorder='big')
         print(value_bytes)
 
         ser.write(value_bytes)
+        print(to_send)
 
     except ValueError:
         input_error_message.config(text="")
@@ -56,14 +61,15 @@ def send_input(index):  # send inputs selected
         # input_error_message.destroy()
         input_error_message.config(text=error_msg)
         input_error_message.config(fg="red")
-        value=0.0
+        #to correct afterwards
+        value = 0.0
         value_bytes = struct.pack('f', value)
         print(value_bytes)
 
         ser.write(value_bytes)
 
 
-def send_all(): #send all inputs at once
+def send_all():  # send all inputs at once
 
     children = frame_error.winfo_children()
     for widget in children[1:]:
@@ -72,26 +78,30 @@ def send_all(): #send all inputs at once
     send_all_error_msg = ""
     error_count = 0
 
-    for j, entry_field in enumerate(entry_fields):
+    for j, entry_field in enumerate(to_send):
         try:
             value = float(entry_field.get())
+            value_bytes = struct.pack('f', value)  # float into bytes
+            time.sleep(0.5)
+            ser.write(value_bytes)
 
             print(inputs[j] + ':', value)
 
 
         except ValueError:
             send_all_error_msg = "Invalid format in " + inputs[j]
-            #error_count += 1
+            error_count += 1
             send_all_input_error_message = tk.Label(frame_error)
-            send_all_input_error_message.config(text=send_all_error_msg,fg="red")
+            send_all_input_error_message.config(text=send_all_error_msg, fg="red")
             send_all_input_error_message.grid(row=error_count, column=0, sticky="w", padx=10, pady=5)
+
 
     # error_count=0
 
 
-def clear_all():# clear all fields
+def clear_all():  # clear all fields
 
-    for entry_field in entry_fields:
+    for entry_field in to_send:
         entry_field.delete(0, tk.END)
     # Clear error message label
 
@@ -100,7 +110,7 @@ def clear_all():# clear all fields
         widget.destroy()
 
 
-#functions up>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# functions up>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Inputs Frame#########################
 frame_inputs = tk.Frame(root, borderwidth=1, relief="groove")
@@ -109,21 +119,23 @@ frame_inputs.grid(row=0, column=0, padx=10, pady=5, sticky="nsew")  # Packing th
 # for loop to create GUI
 row_no = 0
 for i in inputs:
+    # labels
     label = tk.Label(frame_inputs, text=i + ":")
     label.grid(row=row_no, column=0, sticky="W", padx=10, pady=5)
 
+    # input fields
     entry_field = tk.Entry(frame_inputs)
     entry_field.grid(row=row_no, column=1, sticky="W", padx=10, pady=5)
 
+    # button for each field
     button = tk.Button(frame_inputs, text="Send " + i, command=lambda index=row_no: send_input(index))
     button.grid(row=row_no, column=2, sticky="W", padx=10, pady=5)
-    entry_fields.append(entry_field)
+    to_send.append(entry_field)
     row_no += 1
 # end of for loop to create GUI
 
 
 # send all inputs button
-
 button_send_all = tk.Button(frame_inputs, text="Send all", command=send_all)
 button_send_all.grid(row=row_no + 1, column=2, sticky="W", padx=10, pady=5)
 
@@ -152,4 +164,3 @@ send_all_input_error_message = tk.Label(frame_error)
 root.mainloop()
 
 ser.close()
-
