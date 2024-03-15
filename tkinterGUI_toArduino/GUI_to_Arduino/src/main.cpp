@@ -33,20 +33,26 @@ void setup()
   pinMode(white,OUTPUT);
   
   Serial.begin(9600);
+  delay(400);
 
 }
 void loop() {
   if (Serial.available()>0) {
-    String received_data = Serial.readStringUntil('\n'); // Read the string until newline character
-    float received_float = received_data.toFloat(); // Convert string to float
-    Serial.print("Received float: ");
-    Serial.println(received_float, 4); // Print the received float with 4 decimal places
+    int value;
+    Serial.readBytes((char*)&value, 2);
     
-    if (received_float>0)
+    if (value>0)
     {
       digitalWrite(yellow,HIGH);
       digitalWrite(blue,LOW);
       digitalWrite(red,HIGH);
+      digitalWrite(white,LOW);
+    }
+    else
+    {
+      digitalWrite(yellow,LOW);
+      digitalWrite(blue,LOW);
+      digitalWrite(red,LOW);
       digitalWrite(white,LOW);
     }
 
