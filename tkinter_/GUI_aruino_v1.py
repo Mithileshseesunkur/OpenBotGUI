@@ -39,11 +39,11 @@ def send_input(index):  # send inputs selected
     #try except errors
     try:
         input_error_message.config(text="")
-        value = int(entry_fields[index].get())
+        value = float(entry_fields[index].get())
         print(inputs[index] + ":", value)
         # Here commands to send the value to Arduino
-        #value_bytes=struct.pack('f',value)
-        value_bytes= value.to_bytes(2, byteorder='big')
+        value_bytes=struct.pack('f',value)
+        #value_bytes= value.to_bytes(2, byteorder='big')
         print(value_bytes)
 
         ser.write(value_bytes)
@@ -56,8 +56,8 @@ def send_input(index):  # send inputs selected
         # input_error_message.destroy()
         input_error_message.config(text=error_msg)
         input_error_message.config(fg="red")
-        value=0
-        value_bytes = value.to_bytes(2, byteorder='big')
+        value=0.0
+        value_bytes = struct.pack('f', value)
         print(value_bytes)
 
         ser.write(value_bytes)

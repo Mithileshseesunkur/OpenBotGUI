@@ -37,11 +37,18 @@ void setup()
 
 }
 void loop() {
-  if (Serial.available()>0) {
-    int value;
-    Serial.readBytes((char*)&value, 2);
-    
-    if (value>0)
+  if (Serial.available() >= sizeof(float)) 
+  {
+    // Read the incoming bytes into a float variable
+    float receivedFloat;
+    Serial.readBytes((char*)&receivedFloat, sizeof(float));
+
+    // Print the received value
+    Serial.print("Received value: ");
+    Serial.println(receivedFloat, 4);  // Print with 4 decimal places
+
+    //arduino commands after reading float value
+    if (receivedFloat>12.2)
     {
       digitalWrite(yellow,HIGH);
       digitalWrite(blue,LOW);
@@ -55,9 +62,6 @@ void loop() {
       digitalWrite(red,LOW);
       digitalWrite(white,LOW);
     }
-
-
-
   }
 }
 
