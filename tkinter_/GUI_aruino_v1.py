@@ -13,7 +13,7 @@ root.title("Testing input")
 inputs = ["yellow", "blue", "red", "white"]
 
 #open serial connection
-ser=serial.Serial('COM3',9600)
+ser=serial.Serial('COM17',9600)
 
 #wait for arduino to reset
 time.sleep(1)
@@ -39,10 +39,11 @@ def send_input(index):  # send inputs selected
     #try except errors
     try:
         input_error_message.config(text="")
-        value = float(entry_fields[index].get())
+        value = int(entry_fields[index].get())
         print(inputs[index] + ":", value)
         # Here commands to send the value to Arduino
-        value_bytes=struct.pack('f',value)
+        #value_bytes=struct.pack('f',value)
+        value_bytes= value.to_bytes(2, byteorder='big')
         print(value_bytes)
 
         ser.write(value_bytes)
@@ -55,6 +56,11 @@ def send_input(index):  # send inputs selected
         # input_error_message.destroy()
         input_error_message.config(text=error_msg)
         input_error_message.config(fg="red")
+        value=0
+        value_bytes = value.to_bytes(2, byteorder='big')
+        print(value_bytes)
+
+        ser.write(value_bytes)
 
 
 def send_all(): #send all inputs at once
