@@ -3,6 +3,8 @@ import numpy as np
 import serial
 import time
 import struct
+from pySerialTransfer import pySerialTransfer as txfer
+import threading
 
 root = tk.Tk()
 
@@ -14,15 +16,21 @@ inputs = np.array(["yellow", "blue", "red", "white"])
 print(inputs)
 
 # open serial connection
-ser = serial.Serial('COM17', 9600)
+link = txfer.SerialTransfer('COM17')
+link.open()
 
 # wait for arduino to reset
-time.sleep(1)
+time.sleep(2)
 
 # initial settings
 # to_send = []  # List to store entry fields
 shape = inputs.shape
+
+# get inputs from entry fields
 to_send = []
+
+# what is sending
+sending_list = []
 print(to_send)
 
 error_message_matrix = []
@@ -50,7 +58,7 @@ def send_input(index):  # send inputs selected
         # value_bytes= value.to_bytes(2, byteorder='big')
         print(value_bytes)
 
-        ser.write(value_bytes)
+        # ser.write(value_bytes)
         print(to_send)
 
     except ValueError:
@@ -61,14 +69,15 @@ def send_input(index):  # send inputs selected
         # input_error_message.destroy()
         input_error_message.config(text=error_msg)
         input_error_message.config(fg="red")
-        #to correct afterwards
+        # to correct afterward
         value = 0.0
         value_bytes = struct.pack('f', value)
         print(value_bytes)
 
-        ser.write(value_bytes)
+        # ser.write(value_bytes)
 
 
+'''
 def send_all():  # send all inputs at once
 
     children = frame_error.winfo_children()
@@ -80,23 +89,79 @@ def send_all():  # send all inputs at once
 
     for j, entry_field in enumerate(to_send):
         try:
+            send_size = 0
+            print(send_size)
             value = float(entry_field.get())
-            value_bytes = struct.pack('f', value)  # float into bytes
-            time.sleep(0.5)
-            ser.write(value_bytes)
 
+            value_size = link.tx_obj(value, send_size) - send_size
+            send_size += value_size
+
+
+
+            while not link.available():
+                if link.status < 0:
+                    if link.status == txfer.CRC_ERROR:
+                        print("ERROR: CRC_ERROR")
+                    elif link.status == txfer.PAYLOAD_ERROR:
+                        print('ERROR: PAYLOAD_ERROR')
+                    elif link.status == txfer.STOP_BYTE_ERROR:
+                        print('ERROR: STOP_BYTE_ERROR')
+                    else:
+                        print('ERROR: {}'.format(link.status))
+            # ser.write(value_bytes)
+            threading.Thread(target=send_data, args=(value,inputs[index]))
             print(inputs[j] + ':', value)
 
 
         except ValueError:
+            value = 0
+
+            send_all_error_msg = "Invalid format in " + inputs[j]
+            error_count += 1
+            send_all_input_error_message = tk.Label(frame_error)
+            send_all_input_error_message.config(text=send_all_error_msg, fg="red")
+            send_all_input_error_message.grid(row=error_count, column=0, sticky="w", padx=10, pady=5)
+            print(value)
+    # error_count=0
+'''
+
+'''def send_all_thread():
+    thread = threading.Thread(target=send_all)
+    thread.start()'''
+
+
+def send_all():
+    children = frame_error.winfo_children()
+    for widget in children[1:]:
+        widget.destroy()
+
+    send_all_error_msg = ""
+    error_count = 0
+    send_size = 0
+    for j, entry_field in enumerate(to_send):
+        try:
+
+            value = float(entry_field.get())
+
+            value_size = link.tx_obj(value, send_size) - send_size
+            send_size += value_size
+
+            print(inputs[j] + ':', value)
+
+        except ValueError:
+            value = 0
+            value_size = link.tx_obj(value, send_size) - send_size
+            send_size += value_size
+
+            print(inputs[j] + ':', value)
             send_all_error_msg = "Invalid format in " + inputs[j]
             error_count += 1
             send_all_input_error_message = tk.Label(frame_error)
             send_all_input_error_message.config(text=send_all_error_msg, fg="red")
             send_all_input_error_message.grid(row=error_count, column=0, sticky="w", padx=10, pady=5)
 
-
-    # error_count=0
+    print(send_size)
+    link.send(send_size)
 
 
 def clear_all():  # clear all fields
@@ -163,4 +228,5 @@ send_all_input_error_message = tk.Label(frame_error)
 
 root.mainloop()
 
-ser.close()
+# ser.close()
+link.close()
