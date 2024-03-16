@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "SerialTransfer.h"
 
 // put function declarations here:
 #define yellow 13
@@ -6,10 +7,12 @@
 #define blue 8
 #define white 7
 
-
-const byte MAX_NUM_ELEMENTS = 10;  // Maximum number of elements in the array
-float received_data[MAX_NUM_ELEMENTS];
-
+SerialTransfer myTransfer;
+// Define the size of the array to store received data
+const int MAX_DATA_SIZE = 10;
+byte receivedData[MAX_DATA_SIZE]; // Array to store received data
+int receivedDataSize = 0; // Variable to keep track of the number of bytes received
+uint16_t dataIndex =0;
 
 int countYellow=1;
 int countBlue;
@@ -23,93 +26,47 @@ void setup()
   pinMode(red,OUTPUT);
   pinMode(white,OUTPUT);
   
-  Serial.begin(9600);
-
-  //initializing received_data with zeros
-  for (int i = 0; i < MAX_NUM_ELEMENTS; i++) {
-    received_data[i] = 0;
-  }
-
+  Serial.begin(115200);
+  myTransfer.begin(Serial);
+  
   //wait a bit..
-  delay(400);
+  
   
 
 }
-void loop() {
-  
-  
-  /*
-  if (Serial.available() >= sizeof(float)) 
+void loop() 
+{
+
+
+  if(myTransfer.available())
   {
-    // Read the incoming bytes into a float variable
-    float receivedFloat;
-    Serial.readBytes((char*)&receivedFloat, sizeof(float));
-
-    // Print the received value
-    Serial.print("Received value: ");
-    Serial.println(receivedFloat, 4);  // Print with 4 decimal places
-
-    //arduino commands after reading float value
-    if (receivedFloat>12.2)
+    digitalWrite(white,HIGH);
+    
+    // send all received data back to Python
+    for(uint16_t i=0; i < myTransfer.bytesRead; i++)
+    {
+      receivedData[i] = myTransfer.packet.rxBuff[i];
+      dataIndex++;
+    }
+       
+      if (receivedData[0]>40.0)
     {
       digitalWrite(yellow,HIGH);
-      digitalWrite(blue,LOW);
-      digitalWrite(red,HIGH);
-      digitalWrite(white,LOW);
     }
-    else
+    
+    
+
+    if (receivedData[1]>40.0)
     {
-      digitalWrite(yellow,LOW);
-      digitalWrite(blue,LOW);
-      digitalWrite(red,LOW);
-      digitalWrite(white,LOW);
+      digitalWrite(blue,HIGH);
     }
-  }
-  */
-  if (Serial.available() > 0) {  // Check if data is available
-    digitalWrite(red,HIGH);
-    // Read the number of elements
-    byte num_elements = Serial.read();
-    delay(500);
-    digitalWrite(red,LOW);
-
-    // Ensure the number of elements does not exceed the array size
-    if (num_elements <= MAX_NUM_ELEMENTS)//&& Serial.available() >= 4 * num_elements)
-    {
-      digitalWrite(white,HIGH);
-      delay(500);
-      // Read and reconstruct each float
-      for (int i = 0; i < num_elements; i++) 
-      {
-        digitalWrite(blue,HIGH);
-        byte buffer[4];
-        Serial.readBytes(buffer, 4);
-        received_data[i] = *((float*)buffer);
-        digitalWrite(blue,LOW);
-
-      }
-      delay(500);
-      digitalWrite(white,LOW);
-    }
-  }
-
-  if (received_data[0]>40.0)
-  {
-    digitalWrite(yellow,HIGH);
-  }
+    
+    
   
+  }
+  delay(500);
 
-  if (received_data[1]>40.0)
-  {
-    digitalWrite(blue,HIGH);
-  }
-  else
-  {
-    digitalWrite(blue,LOW);
-  }
- 
 }
-
     
     
   
