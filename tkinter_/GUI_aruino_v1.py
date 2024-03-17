@@ -7,13 +7,13 @@ import struct
 from pySerialTransfer import pySerialTransfer as txfer
 import threading
 
-#set the theme and color coptions
+# set the theme and color coptions
 
-customtkinter.set_appearance_mode("dark") #system(default), light, dark
+customtkinter.set_appearance_mode("dark")  # system(default), light, dark
 customtkinter.set_default_color_theme("blue")
 
-#root = tk.Tk()
-root=customtkinter.CTk()
+# root = tk.Tk()
+root = customtkinter.CTk()
 
 # title of window
 root.title("Testing input")
