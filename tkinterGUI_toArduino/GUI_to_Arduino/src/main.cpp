@@ -1,26 +1,27 @@
 #include <Arduino.h>
 #include "SerialTransfer.h"
+#include <SoftwareSerial.h>
+
+SoftwareSerial mySerial(3,2); //RX TX
 
 // put function declarations here:
-#define yellow 13
+#define yellow 11
 #define red 12
 #define blue 8
 #define white 7
 
 SerialTransfer myTransfer;
+
 // Define the size of the array to store received data
 const int MAX_DATA_SIZE = 10;
 float receivedData[MAX_DATA_SIZE]; // Array to store received data
-int receivedDataSize = 0; // Variable to keep track of the number of bytes received
+int i;
 
-
-int countYellow=1;
-int countBlue;
-
-
+//structure of incoming data
 struct __attribute__((packed)) STRUCT {
   
   float input;
+
 } testStruct;
 
 void setup() 
@@ -33,6 +34,9 @@ void setup()
   
   Serial.begin(115200);
   myTransfer.begin(Serial);
+
+  mySerial.begin(115200);
+  mySerial.println("Print to SoftwareSerial");
   
 
 }
@@ -58,23 +62,29 @@ void loop()
     //Serial.print(testStruct.z);
     //Serial.print(testStruct.y);
     //Serial.print(" | ");
-
+    mySerial.println("receivedData--------");
     recSize = myTransfer.rxObj(receivedData, recSize);
-    //Serial.println(arr);
-       
-      if (receivedData[0]>40)
+    for (i=0;i<MAX_DATA_SIZE;i++)
     {
+      mySerial.println(receivedData[i]);
+    }
+    mySerial.println("--------");
+    
+    
+    //check some conditions with recivedData   
+    if (receivedData[0]>40)
+    {
+      mySerial.println("yellow");
       digitalWrite(yellow,HIGH);
     }
     else
     {
       digitalWrite(yellow,LOW);
     }
-    
-    
 
     if (receivedData[1]>40)
     {
+      mySerial.println("blue");
       digitalWrite(blue,HIGH);
     }
     else
@@ -85,6 +95,9 @@ void loop()
   
   }
   delay(100);
+  
+  
+  //mySerial.println("esdsf");
 
 }
     

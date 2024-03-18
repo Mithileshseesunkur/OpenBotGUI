@@ -22,7 +22,7 @@ inputs = np.array(["yellow", "blue", "red", "white"])
 print(inputs)
 
 # open serial connection
-link = txfer.SerialTransfer('COM17')
+link = txfer.SerialTransfer('COM2')
 link.open()
 
 # wait for arduino to reset
