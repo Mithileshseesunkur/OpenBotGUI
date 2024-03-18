@@ -10,13 +10,18 @@
 SerialTransfer myTransfer;
 // Define the size of the array to store received data
 const int MAX_DATA_SIZE = 10;
-byte receivedData[MAX_DATA_SIZE]; // Array to store received data
+float receivedData[MAX_DATA_SIZE]; // Array to store received data
 int receivedDataSize = 0; // Variable to keep track of the number of bytes received
-uint16_t dataIndex =0;
+
 
 int countYellow=1;
 int countBlue;
 
+
+struct __attribute__((packed)) STRUCT {
+  
+  float input;
+} testStruct;
 
 void setup() 
 {
@@ -29,42 +34,57 @@ void setup()
   Serial.begin(115200);
   myTransfer.begin(Serial);
   
-  //wait a bit..
-  
-  
 
 }
 void loop() 
 {
-
+  
 
   if(myTransfer.available())
   {
     digitalWrite(white,HIGH);
     
     // send all received data back to Python
+    /*
     for(uint16_t i=0; i < myTransfer.bytesRead; i++)
     {
       receivedData[i] = myTransfer.packet.rxBuff[i];
-      dataIndex++;
+      
     }
+    */
+    uint16_t recSize = 0;
+
+    recSize = myTransfer.rxObj(testStruct, recSize);
+    //Serial.print(testStruct.z);
+    //Serial.print(testStruct.y);
+    //Serial.print(" | ");
+
+    recSize = myTransfer.rxObj(receivedData, recSize);
+    //Serial.println(arr);
        
-      if (receivedData[0]>40.0)
+      if (receivedData[0]>40)
     {
       digitalWrite(yellow,HIGH);
+    }
+    else
+    {
+      digitalWrite(yellow,LOW);
     }
     
     
 
-    if (receivedData[1]>40.0)
+    if (receivedData[1]>40)
     {
       digitalWrite(blue,HIGH);
     }
-    
+    else
+    {
+      digitalWrite(blue,LOW);
+    }
     
   
   }
-  delay(10);
+  delay(100);
 
 }
     

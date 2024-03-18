@@ -12,7 +12,6 @@ import threading
 customtkinter.set_appearance_mode("dark")  # system(default), light, dark
 customtkinter.set_default_color_theme("blue")
 
-# root = tk.Tk()
 root = customtkinter.CTk()
 
 # title of window
@@ -29,22 +28,18 @@ link.open()
 # wait for arduino to reset
 time.sleep(2)
 
-# initial settings
-# to_send = []  # List to store entry fields
-shape = inputs.shape
-
 # get inputs from entry fields
 to_send = []
 
 # what is sending
 sending_list = []
-print(to_send)
 
+# errors storedhere
 error_message_matrix = []
 
+# button functions down>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-# functions down>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-def send_input(index):  # send inputs selected
+'''def send_input(index):  # send inputs selected
 
     # refresh frame_error everytime this func is called
     children = frame_error.winfo_children()
@@ -64,8 +59,6 @@ def send_input(index):  # send inputs selected
         value_bytes = struct.pack('f', value)
         # value_bytes= value.to_bytes(2, byteorder='big')
         print(value_bytes)
-
-        # ser.write(value_bytes)
         print(to_send)
 
     except ValueError:
@@ -80,8 +73,7 @@ def send_input(index):  # send inputs selected
         value_bytes = struct.pack('f', value)
         print(value_bytes)
 
-        # ser.write(value_bytes)
-
+        # ser.write(value_bytes)'''
 
 '''
 def send_all():  # send all inputs at once
@@ -131,10 +123,6 @@ def send_all():  # send all inputs at once
     # error_count=0
 '''
 
-'''def send_all_thread():
-    thread = threading.Thread(target=send_all)
-    thread.start()'''
-
 
 def send_all():
     children = frame_error.winfo_children()
@@ -162,9 +150,9 @@ def send_all():
             print(inputs[j] + ':', value)
             send_all_error_msg = "Invalid format in " + inputs[j]
             error_count += 1
-            send_all_input_error_message = customtkinter.CTkLabel(frame_error)
-            send_all_input_error_message.configure(text=send_all_error_msg)
-            send_all_input_error_message.grid(row=error_count, column=0, sticky="w", padx=10, pady=5)
+            send_all_input_error_label = customtkinter.CTkLabel(frame_error)
+            send_all_input_error_label.configure(text=send_all_error_msg)
+            send_all_input_error_label.grid(row=error_count, column=0, sticky="w", padx=10, pady=5)
 
     print(send_size)
     link.send(send_size)
@@ -181,7 +169,7 @@ def clear_all():  # clear all fields
         widget.destroy()
 
 
-# functions up>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# button functions up>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Inputs Frame#########################
 frame_inputs = customtkinter.CTkFrame(root, border_width=1)
@@ -192,28 +180,30 @@ row_no = 0
 for i in inputs:
     # labels
     label = customtkinter.CTkLabel(frame_inputs, text=i + ":")
-    label.grid(row=row_no, column=0, sticky="W", padx=10, pady=5)
+    label.grid(row=row_no, column=0, sticky="E", padx=10, pady=5)
 
     # input fields
     entry_field = customtkinter.CTkEntry(frame_inputs)
     entry_field.grid(row=row_no, column=1, sticky="W", padx=10, pady=5)
 
     # button for each field
-    button = customtkinter.CTkButton(frame_inputs, text="Send " + i, command=lambda index=row_no: send_input(index))
+    '''button = customtkinter.CTkButton(frame_inputs, text="Send " + i, command=lambda index=row_no: send_input(index))
     button.grid(row=row_no, column=2, sticky="W", padx=10, pady=5)
+    '''
     to_send.append(entry_field)
     row_no += 1
 # end of for loop to create GUI
+print(row_no)
 
 
 # send all inputs button
-button_send_all = customtkinter.CTkButton(frame_inputs, text="Send all", command=send_all)
-button_send_all.grid(row=row_no + 1, column=2, sticky="W", padx=10, pady=5)
+button_send_all = customtkinter.CTkButton(frame_inputs, width=120, height=25, text="Send all", command=send_all)
+button_send_all.grid(row=row_no, column=1, rowspan=2, padx=10, pady=5)
 
 # clear all button
 
-button_clear_all = customtkinter.CTkButton(frame_inputs, text="Clear all", command=clear_all)
-button_clear_all.grid(row=row_no + 1, column=0, sticky="W", padx=10, pady=5)
+button_clear_all = customtkinter.CTkButton(frame_inputs, width=75, height=25, text="Clear all", command=clear_all)
+button_clear_all.grid(row=row_no + 1, column=0, rowspan=2, sticky="E", padx=10, pady=5)
 # print("yes")
 
 # frame error messages>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -222,7 +212,7 @@ frame_error = customtkinter.CTkFrame(root, border_width=1)
 frame_error.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
 # frame_error title
-label_error = customtkinter.CTkLabel(frame_error, text="Error messages:")
+label_error = customtkinter.CTkLabel(frame_error, text_color='#Ff3766', text="Error messages:")
 label_error.grid(row=0, column=0, sticky="W", padx=10, pady=5)
 
 # send_input error label
