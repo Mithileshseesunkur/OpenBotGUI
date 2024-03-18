@@ -34,7 +34,7 @@ to_send = []
 # what is sending
 sending_list = []
 
-# errors storedhere
+# errors stored here
 error_message_matrix = []
 
 # button functions down>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>

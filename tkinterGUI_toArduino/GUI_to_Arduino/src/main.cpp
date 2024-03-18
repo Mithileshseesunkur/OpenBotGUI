@@ -64,6 +64,7 @@ void loop()
     //Serial.print(" | ");
     mySerial.println("receivedData--------");
     recSize = myTransfer.rxObj(receivedData, recSize);
+
     for (i=0;i<MAX_DATA_SIZE;i++)
     {
       mySerial.println(receivedData[i]);
@@ -97,7 +98,7 @@ void loop()
   delay(100);
   
   
-  //mySerial.println("esdsf");
+  
 
 }
     
