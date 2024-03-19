@@ -13,16 +13,19 @@ SoftwareSerial mySerial(3,2); //RX TX
 SerialTransfer myTransfer;
 
 // Define the size of the array to store received data
-const int MAX_DATA_SIZE = 10;
+const int MAX_DATA_SIZE = 4;
 float receivedData[MAX_DATA_SIZE]; // Array to store received data
 int i;
 
+//DO THIS FOR MORE THAN ONE TYPE OF DATA
 //structure of incoming data
+/*
 struct __attribute__((packed)) STRUCT {
   
   float input;
 
 } testStruct;
+*/
 
 void setup() 
 {
@@ -58,12 +61,14 @@ void loop()
     */
     uint16_t recSize = 0;
 
-    recSize = myTransfer.rxObj(testStruct, recSize);
-    //Serial.print(testStruct.z);
-    //Serial.print(testStruct.y);
-    //Serial.print(" | ");
-    mySerial.println("receivedData--------");
+    //DO THIS FOR MORE THAN ONE TYPE OF DATA
+    //recSize = myTransfer.rxObj(testStruct, recSize);
+    
+    mySerial.println("--------");
+    mySerial.println("receivedData:--------");
     recSize = myTransfer.rxObj(receivedData, recSize);
+
+    //FROM HERE DATA IS STORED IN received data
 
     for (i=0;i<MAX_DATA_SIZE;i++)
     {
@@ -73,7 +78,7 @@ void loop()
     
     
     //check some conditions with recivedData   
-    if (receivedData[0]>40)
+    if (receivedData[0]>1)
     {
       mySerial.println("yellow");
       digitalWrite(yellow,HIGH);
@@ -83,7 +88,7 @@ void loop()
       digitalWrite(yellow,LOW);
     }
 
-    if (receivedData[1]>40)
+    if (receivedData[1]>1)
     {
       mySerial.println("blue");
       digitalWrite(blue,HIGH);
@@ -95,7 +100,7 @@ void loop()
     
   
   }
-  delay(100);
+  delay(10);
   
   
   

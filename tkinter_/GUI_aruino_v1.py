@@ -7,7 +7,7 @@ import struct
 from pySerialTransfer import pySerialTransfer as txfer
 import threading
 
-# set the theme and color coptions
+# set the theme and color options
 
 customtkinter.set_appearance_mode("dark")  # system(default), light, dark
 customtkinter.set_default_color_theme("blue")
@@ -132,19 +132,23 @@ def send_all():
     send_all_error_msg = ""
     error_count = 0
     send_size = 0
+    print("printing value size")
     for j, entry_field in enumerate(to_send):
         try:
 
             value = float(entry_field.get())
 
             value_size = link.tx_obj(value, send_size) - send_size
+            print(value_size)
             send_size += value_size
 
             print(inputs[j] + ':', value)
 
+
         except ValueError:
             value = 0
             value_size = link.tx_obj(value, send_size) - send_size
+            print(value_size)
             send_size += value_size
 
             print(inputs[j] + ':', value)
@@ -154,8 +158,8 @@ def send_all():
             send_all_input_error_label.configure(text=send_all_error_msg)
             send_all_input_error_label.grid(row=error_count, column=0, sticky="w", padx=10, pady=5)
 
-    print(send_size)
     link.send(send_size)
+    print(send_size)
 
 
 def clear_all():  # clear all fields
@@ -193,8 +197,7 @@ for i in inputs:
     to_send.append(entry_field)
     row_no += 1
 # end of for loop to create GUI
-print(row_no)
-
+print(to_send)
 
 # send all inputs button
 button_send_all = customtkinter.CTkButton(frame_inputs, width=120, height=25, text="Send all", command=send_all)
