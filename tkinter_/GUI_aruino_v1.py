@@ -5,7 +5,7 @@ import serial
 import time
 import struct
 from pySerialTransfer import pySerialTransfer as txfer
-import threading
+
 
 # set the theme and color options
 
