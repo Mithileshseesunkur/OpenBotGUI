@@ -3,7 +3,7 @@ import customtkinter
 import numpy as np
 import time
 from pySerialTransfer import pySerialTransfer as txfer
-import threading
+
 
 # set the theme and color options
 
