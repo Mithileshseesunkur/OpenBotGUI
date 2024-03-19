@@ -1,9 +1,7 @@
 import tkinter as tk
 import customtkinter
 import numpy as np
-import serial
 import time
-import struct
 from pySerialTransfer import pySerialTransfer as txfer
 import threading
 
