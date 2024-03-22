@@ -28,7 +28,7 @@ sending_list = []
 # errors stored here
 error_message_matrix = []
 
-conn_avail=None
+
 # button functions down>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # connect function
@@ -36,16 +36,11 @@ def link_():
     link_def = txfer.SerialTransfer('COM2')
     return link_def
 
-
 try:
     link = link_()
-    conn_avail=True
 
 except txfer.InvalidSerialPort:
-    conn_avail=False
     pass
-
-
 def connect():
     # clear everything
     children = frame_error.winfo_children()
@@ -58,7 +53,7 @@ def connect():
         connection_label = customtkinter.CTkLabel(frame_error,
                                                   text=connection_text)
         connection_label.grid(row=1, column=0, sticky='W', padx=10, pady=5)
-    except (txfer.InvalidSerialPort, NameError):
+    except txfer.InvalidSerialPort:
         connection_error_text = "Maybe Arduino is off or USB not connected"
         connection_error_label = customtkinter.CTkLabel(frame_error,
                                                         text=connection_error_text)
@@ -151,7 +146,7 @@ def send_all():  # send all inputs at once
 
 
 def send_all():
-    # global link
+    global link
     children = frame_error.winfo_children()
     for widget in children[1:]:
         widget.destroy()
@@ -160,49 +155,31 @@ def send_all():
     error_count = 0
     send_size = 0
     print("printing value size")
-    if conn_avail:
-        print("LINK!")
-        for j, entry_field in enumerate(to_send):
-            try:
-
-                value = float(entry_field.get())
-
-                value_size = link.tx_obj(value, send_size) - send_size
-                print(value_size)
-                send_size += value_size
-
-                print(inputs[j] + ':', value)
-
-
-            except ValueError:
-                value = 0
-                value_size = link.tx_obj(value, send_size) - send_size
-                print(value_size)
-                send_size += value_size
-
-                print(inputs[j] + ':', value)
-                send_all_error_msg = "Invalid format in " + inputs[j]
-                error_count += 1
-                send_all_input_error_label = customtkinter.CTkLabel(frame_error)
-                send_all_input_error_label.configure(text=send_all_error_msg)
-                send_all_input_error_label.grid(row=error_count, column=0, sticky="w",
-                                                padx=10, pady=5)
-            except NameError:
-                connection_error_text = "No connection"
-                connection_error_label = customtkinter.CTkLabel(frame_error,
-                                                                text=connection_error_text)
-                connection_error_label.grid(row=1, column=0, sticky='W', padx=10, pady=5)
-    else:
+    for j, entry_field in enumerate(to_send):
         try:
-            print("send all else cond")
-            connection_error_text = "No connection"
-            connection_error_label = customtkinter.CTkLabel(frame_error,
-                                                            text=connection_error_text)
-            connection_error_label.grid(row=1, column=0, sticky='W', padx=10, pady=5)
 
-        except NameError:
-            pass
+            value = float(entry_field.get())
 
+            value_size = link.tx_obj(value, send_size) - send_size
+            print(value_size)
+            send_size += value_size
+
+            print(inputs[j] + ':', value)
+
+
+        except ValueError:
+            value = 0
+            value_size = link.tx_obj(value, send_size) - send_size
+            print(value_size)
+            send_size += value_size
+
+            print(inputs[j] + ':', value)
+            send_all_error_msg = "Invalid format in " + inputs[j]
+            error_count += 1
+            send_all_input_error_label = customtkinter.CTkLabel(frame_error)
+            send_all_input_error_label.configure(text=send_all_error_msg)
+            send_all_input_error_label.grid(row=error_count, column=0, sticky="w",
+                                            padx=10, pady=5)
 
     link.send(send_size)
     print(send_size)
@@ -224,7 +201,7 @@ def clear_all():  # clear all fields
 # connect frame ########################################################
 frame_connect = customtkinter.CTkFrame(root, border_width=1)
 frame_connect.grid(row=0, column=0, padx=10,
-                   pady=5, sticky="nsew")
+                   pady=5,sticky="nsew")
 
 connect_button = customtkinter.CTkButton(frame_connect, width=75,
                                          height=25,
