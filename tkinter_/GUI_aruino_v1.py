@@ -71,15 +71,18 @@ def connect():
         connection_label = customtkinter.CTkLabel(frame_error,
                                                   text=connection_text)
         connection_label.grid(row=1, column=0, sticky='W', padx=10, pady=5)
+        update_send_all_button_state('normal')
 
     else:
         connection_error_text = "Maybe Arduino is off or USB not connected"
         connection_error_label = customtkinter.CTkLabel(frame_error,
                                                         text=connection_error_text)
         connection_error_label.grid(row=1, column=0, sticky='W', padx=10, pady=5)
+        update_send_all_button_state('disabled')
 
 
-
+def update_send_all_button_state(state):
+    button_send_all.configure(state=state)
 
 
 
@@ -160,13 +163,13 @@ connect_button.grid(row=0, column=0, sticky="W",
 ######################################################################
 
 
-if conn_avail:
+'''if conn_avail:
     status = 'normal'
     print("normal")
 else:
     status = 'disabled'
     print("disabled")
-
+'''
 # Inputs Frame ########################################################
 frame_inputs = customtkinter.CTkFrame(root, border_width=1)
 frame_inputs.grid(row=1,
@@ -198,7 +201,7 @@ print(to_send)
 # send all inputs button
 button_send_all = customtkinter.CTkButton(frame_inputs, width=120,
                                           height=25, text="Send all",
-                                          command=send_all,state=status)
+                                          command=send_all,state='disabled')
 button_send_all.grid(row=row_no, column=1, rowspan=2, padx=10, pady=5)
 
 # clear all button
