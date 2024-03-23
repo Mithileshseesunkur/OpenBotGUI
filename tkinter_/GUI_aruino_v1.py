@@ -1,3 +1,4 @@
+import tkinter
 import tkinter as tk
 import customtkinter
 import numpy as np
@@ -28,38 +29,214 @@ sending_list = []
 # errors stored here
 error_message_matrix = []
 
-
+conn_avail=None
 # button functions down>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # connect function
-def link_():
-    link_def = txfer.SerialTransfer('COM2')
-    return link_def
 
-try:
-    link = link_()
 
-except txfer.InvalidSerialPort:
-    pass
-def connect():
-    # clear everything
+# function to refresh frame
+def clear_widgets_err_frame():
     children = frame_error.winfo_children()
     for widget in children[1:]:
         widget.destroy()
-    try:
 
+
+# connect and open connection
+def connect():
+    global link
+    global conn_avail
+
+
+    try:
+        clear_widgets_err_frame()
+    except tk.TclError:
+        pass
+
+    try:
+        link = txfer.SerialTransfer('COM2')
+        print("link available")
+        conn_avail = True
+
+
+    except txfer.InvalidSerialPort:
+        conn_avail = False
+        print("NO LINK")
+
+    if conn_avail:
+
+        print("LINK!")
         link.open()
         connection_text = "Connected..."
         connection_label = customtkinter.CTkLabel(frame_error,
                                                   text=connection_text)
         connection_label.grid(row=1, column=0, sticky='W', padx=10, pady=5)
-    except txfer.InvalidSerialPort:
+
+    else:
         connection_error_text = "Maybe Arduino is off or USB not connected"
         connection_error_label = customtkinter.CTkLabel(frame_error,
                                                         text=connection_error_text)
         connection_error_label.grid(row=1, column=0, sticky='W', padx=10, pady=5)
 
 
+
+
+
+
+
+def send_all():
+
+    clear_widgets_err_frame()
+
+    print("---"
+          "inside send_all in if conn_available"
+          "---")
+
+    send_all_error_msg = ""
+    error_count = 0
+    send_size = 0
+    print("printing value size")
+
+    for j, entry_field in enumerate(to_send):
+        try:
+            value = float(entry_field.get())
+
+            value_size = link.tx_obj(value, send_size) - send_size
+            print(value_size)
+            send_size += value_size
+
+            print(inputs[j] + ':', value)
+
+        except ValueError:
+            value = 0
+            value_size = link.tx_obj(value, send_size) - send_size
+            print(value_size)
+            send_size += value_size
+
+            print(inputs[j] + ':', value)
+            send_all_error_msg = "Invalid format in " + inputs[j]
+            error_count += 1
+            send_all_input_error_label = customtkinter.CTkLabel(frame_error)
+            send_all_input_error_label.configure(text=send_all_error_msg)
+            send_all_input_error_label.grid(row=error_count, column=0, sticky="w",
+                                            padx=10, pady=5)
+
+    link.send(send_size)
+    print(send_size)
+
+    '''else:
+        print("---"
+              "inside else in send all"
+              "----")
+        connection_error_text = "Maybe Arduino is off or USB not connected"
+        connection_error_label = customtkinter.CTkLabel(frame_error,
+                                                        text=connection_error_text)
+        connection_error_label.grid(row=1, column=0, sticky='W', padx=10, pady=5)'''
+
+
+def clear_all():  # clear all fields
+
+    for entry_field in to_send:
+        entry_field.delete(0, tk.END)
+    # Clear error message label
+    clear_widgets_err_frame()
+
+
+# button functions up>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+# connect frame ########################################################
+frame_connect = customtkinter.CTkFrame(root, border_width=1)
+frame_connect.grid(row=0, column=0, padx=10,
+                   pady=5, sticky="nsew")
+
+connect_button = customtkinter.CTkButton(frame_connect, width=75,
+                                         height=25,
+                                         text="Connect",
+                                         command=connect)
+connect_button.grid(row=0, column=0, sticky="W",
+                    padx=10,
+                    pady=10)
+# progress bar
+######################################################################
+
+
+if conn_avail:
+    status = 'normal'
+    print("normal")
+else:
+    status = 'disabled'
+    print("disabled")
+
+# Inputs Frame ########################################################
+frame_inputs = customtkinter.CTkFrame(root, border_width=1)
+frame_inputs.grid(row=1,
+                  column=0,
+                  padx=10,
+                  pady=5,
+                  sticky="nsew")  # Packing the frame within the root window
+
+# for loop to create GUI
+row_no = 0
+for i in inputs:
+    # labels
+    label = customtkinter.CTkLabel(frame_inputs, text=i + ":")
+    label.grid(row=row_no, column=0, sticky="E", padx=10, pady=5)
+
+    # input fields
+    entry_field = customtkinter.CTkEntry(frame_inputs)
+    entry_field.grid(row=row_no, column=1, sticky="W", padx=10, pady=5)
+
+    # button for each field
+    '''button = customtkinter.CTkButton(frame_inputs, text="Send " + i, command=lambda index=row_no: send_input(index))
+    button.grid(row=row_no, column=2, sticky="W", padx=10, pady=5)
+    '''
+    to_send.append(entry_field)
+    row_no += 1
+# end of for loop to create GUI
+print(to_send)
+
+# send all inputs button
+button_send_all = customtkinter.CTkButton(frame_inputs, width=120,
+                                          height=25, text="Send all",
+                                          command=send_all,state=status)
+button_send_all.grid(row=row_no, column=1, rowspan=2, padx=10, pady=5)
+
+# clear all button
+
+button_clear_all = customtkinter.CTkButton(frame_inputs, width=75, height=25,
+                                           text="Clear all", command=clear_all)
+button_clear_all.grid(row=row_no + 1, column=0, rowspan=2, sticky="E", padx=10, pady=5)
+# print("yes")
+########################################################################################
+# frame error messages##################################################################
+
+frame_error = customtkinter.CTkFrame(root, border_width=1)
+frame_error.grid(row=2, column=0, padx=10, pady=10, sticky="nsew")
+
+# frame_error title
+label_error = customtkinter.CTkLabel(frame_error, text_color='#ebcf00', text="Notifications:")
+label_error.grid(row=0, column=0, sticky="W", padx=10, pady=5)
+
+# send_input error label
+input_error_message = customtkinter.CTkLabel(frame_error)
+
+# send all error message label
+send_all_input_error_message = customtkinter.CTkLabel(frame_error)
+#######################################################################################
+
+root.mainloop()
+
+# close com
+try:
+    link_close = connect()
+    link_close.close()
+    print("LINK closed")
+except (txfer.InvalidSerialPort, tk.TclError):
+    pass
+
+
+
+#######to consider############
 '''def send_input(index):  # send inputs selected
 
     # refresh frame_error everytime this func is called
@@ -143,138 +320,3 @@ def send_all():  # send all inputs at once
             print(value)
     # error_count=0
 '''
-
-
-def send_all():
-    global link
-    children = frame_error.winfo_children()
-    for widget in children[1:]:
-        widget.destroy()
-
-    send_all_error_msg = ""
-    error_count = 0
-    send_size = 0
-    print("printing value size")
-    for j, entry_field in enumerate(to_send):
-        try:
-
-            value = float(entry_field.get())
-
-            value_size = link.tx_obj(value, send_size) - send_size
-            print(value_size)
-            send_size += value_size
-
-            print(inputs[j] + ':', value)
-
-
-        except ValueError:
-            value = 0
-            value_size = link.tx_obj(value, send_size) - send_size
-            print(value_size)
-            send_size += value_size
-
-            print(inputs[j] + ':', value)
-            send_all_error_msg = "Invalid format in " + inputs[j]
-            error_count += 1
-            send_all_input_error_label = customtkinter.CTkLabel(frame_error)
-            send_all_input_error_label.configure(text=send_all_error_msg)
-            send_all_input_error_label.grid(row=error_count, column=0, sticky="w",
-                                            padx=10, pady=5)
-
-    link.send(send_size)
-    print(send_size)
-
-
-def clear_all():  # clear all fields
-
-    for entry_field in to_send:
-        entry_field.delete(0, tk.END)
-    # Clear error message label
-
-    children = frame_error.winfo_children()
-    for widget in children[1:]:
-        widget.destroy()
-
-
-# button functions up>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-
-# connect frame ########################################################
-frame_connect = customtkinter.CTkFrame(root, border_width=1)
-frame_connect.grid(row=0, column=0, padx=10,
-                   pady=5,sticky="nsew")
-
-connect_button = customtkinter.CTkButton(frame_connect, width=75,
-                                         height=25,
-                                         text="Connect",
-                                         command=connect)
-connect_button.grid(row=0, column=0, sticky="W",
-                    padx=10,
-                    pady=10)
-# progress bar
-######################################################################
-
-# Inputs Frame ########################################################
-frame_inputs = customtkinter.CTkFrame(root, border_width=1)
-frame_inputs.grid(row=1,
-                  column=0,
-                  padx=10,
-                  pady=5,
-                  sticky="nsew")  # Packing the frame within the root window
-
-# for loop to create GUI
-row_no = 0
-for i in inputs:
-    # labels
-    label = customtkinter.CTkLabel(frame_inputs, text=i + ":")
-    label.grid(row=row_no, column=0, sticky="E", padx=10, pady=5)
-
-    # input fields
-    entry_field = customtkinter.CTkEntry(frame_inputs)
-    entry_field.grid(row=row_no, column=1, sticky="W", padx=10, pady=5)
-
-    # button for each field
-    '''button = customtkinter.CTkButton(frame_inputs, text="Send " + i, command=lambda index=row_no: send_input(index))
-    button.grid(row=row_no, column=2, sticky="W", padx=10, pady=5)
-    '''
-    to_send.append(entry_field)
-    row_no += 1
-# end of for loop to create GUI
-print(to_send)
-
-# send all inputs button
-button_send_all = customtkinter.CTkButton(frame_inputs, width=120,
-                                          height=25, text="Send all",
-                                          command=send_all)
-button_send_all.grid(row=row_no, column=1, rowspan=2, padx=10, pady=5)
-
-# clear all button
-
-button_clear_all = customtkinter.CTkButton(frame_inputs, width=75, height=25,
-                                           text="Clear all", command=clear_all)
-button_clear_all.grid(row=row_no + 1, column=0, rowspan=2, sticky="E", padx=10, pady=5)
-# print("yes")
-########################################################################################
-# frame error messages##################################################################
-
-frame_error = customtkinter.CTkFrame(root, border_width=1)
-frame_error.grid(row=2, column=0, padx=10, pady=10, sticky="nsew")
-
-# frame_error title
-label_error = customtkinter.CTkLabel(frame_error, text_color='#ebcf00', text="Notifications:")
-label_error.grid(row=0, column=0, sticky="W", padx=10, pady=5)
-
-# send_input error label
-input_error_message = customtkinter.CTkLabel(frame_error)
-
-# send all error message label
-send_all_input_error_message = customtkinter.CTkLabel(frame_error)
-#######################################################################################
-
-root.mainloop()
-
-# close com
-try:
-    link = link_()
-    link.close()
-except txfer.InvalidSerialPort:
-    pass
