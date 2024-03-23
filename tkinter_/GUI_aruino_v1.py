@@ -236,7 +236,8 @@ except (txfer.InvalidSerialPort, tk.TclError):
 
 
 
-#######to consider############
+#######to
+# consider############
 '''def send_input(index):  # send inputs selected
 
     # refresh frame_error everytime this func is called
