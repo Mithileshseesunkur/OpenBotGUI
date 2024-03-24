@@ -29,7 +29,9 @@ sending_list = []
 # errors stored here
 error_message_matrix = []
 
-conn_avail=None
+conn_avail = None
+
+
 # button functions down>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # connect function
@@ -47,7 +49,6 @@ def connect():
     global link
     global conn_avail
 
-
     try:
         clear_widgets_err_frame()
     except tk.TclError:
@@ -56,6 +57,9 @@ def connect():
     try:
         link = txfer.SerialTransfer('COM2')
         print("link available")
+        progressbar.configure(progress_color='#5cffb6')
+        progressbar.start()
+
         conn_avail = True
 
 
@@ -72,6 +76,7 @@ def connect():
                                                   text=connection_text)
         connection_label.grid(row=1, column=0, sticky='W', padx=10, pady=5)
         update_send_all_button_state('normal')
+        return link
 
     else:
         connection_error_text = "Maybe Arduino is off or USB not connected"
@@ -81,14 +86,13 @@ def connect():
         update_send_all_button_state('disabled')
 
 
+
+
 def update_send_all_button_state(state):
     button_send_all.configure(state=state)
 
 
-
-
 def send_all():
-
     clear_widgets_err_frame()
 
     print("---"
@@ -127,15 +131,6 @@ def send_all():
     link.send(send_size)
     print(send_size)
 
-    '''else:
-        print("---"
-              "inside else in send all"
-              "----")
-        connection_error_text = "Maybe Arduino is off or USB not connected"
-        connection_error_label = customtkinter.CTkLabel(frame_error,
-                                                        text=connection_error_text)
-        connection_error_label.grid(row=1, column=0, sticky='W', padx=10, pady=5)'''
-
 
 def clear_all():  # clear all fields
 
@@ -159,17 +154,19 @@ connect_button = customtkinter.CTkButton(frame_connect, width=75,
 connect_button.grid(row=0, column=0, sticky="W",
                     padx=10,
                     pady=10)
+
 # progress bar
+
+progressbar = customtkinter.CTkProgressBar(frame_connect, orientation='horizonntal',
+                                           indeterminate_speed=.5,
+                                           determinate_speed=0.5,
+                                           mode="indeterminate",
+                                           progress_color='#6e6e6e',
+                                           width=150)
+progressbar.grid(row=0, column=1, padx=10, pady=10)
+progressbar.set(0)
 ######################################################################
 
-
-'''if conn_avail:
-    status = 'normal'
-    print("normal")
-else:
-    status = 'disabled'
-    print("disabled")
-'''
 # Inputs Frame ########################################################
 frame_inputs = customtkinter.CTkFrame(root, border_width=1)
 frame_inputs.grid(row=1,
@@ -201,7 +198,7 @@ print(to_send)
 # send all inputs button
 button_send_all = customtkinter.CTkButton(frame_inputs, width=120,
                                           height=25, text="Send all",
-                                          command=send_all,state='disabled')
+                                          command=send_all, state='disabled')
 button_send_all.grid(row=row_no, column=1, rowspan=2, padx=10, pady=5)
 
 # clear all button
@@ -231,13 +228,11 @@ root.mainloop()
 
 # close com
 try:
-    link_close = connect()
-    link_close.close()
+    link = connect()
+    link.close()
     print("LINK closed")
-except (txfer.InvalidSerialPort, tk.TclError):
+except (txfer.InvalidSerialPort, tk.TclError, NameError):
     pass
-
-
 
 #######to
 # consider############
