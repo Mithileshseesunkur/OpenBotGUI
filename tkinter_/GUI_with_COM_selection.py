@@ -1,6 +1,7 @@
 import tkinter as tk
 import customtkinter
 import numpy as np
+import serial.tools.list_ports
 
 from pySerialTransfer import pySerialTransfer as txfer
 
@@ -31,27 +32,31 @@ error_message_matrix = []
 # global conn_avail
 conn_avail = None
 
+# searching for all available com ports>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-# automatic incrementing row no
+ports = serial.tools.list_ports.comports()  # finding ports
+avail_port = []  # ports dictionary
 
-class increment_row:
-    def __init__(self):
-        self.counter = 0  # initialising no
+for port in sorted(ports):
+    if "Arduino" in port.description:
+        avail_port.append(port.description)
 
-    def __getattr__(self, name):
-        if name == 'row_no':
-            self.counter += 1  # increment each time 'row is accessed
-            return self.counter
+print(avail_port)
 
-        else:
-            pass
-        # edit here later
+com = None
 
 
-# button functions down>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# com_pick function
+def com_pick(choice):
+    global com
+    selected_com = choice.split('(')[1].split(')')[0]
 
-# connect function
+    print(selected_com)
+    com = selected_com
+    # return selected_com
 
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # function to refresh frame
 def clear_widgets_err_frame():
@@ -59,6 +64,8 @@ def clear_widgets_err_frame():
     for widget in children[1:]:
         widget.destroy()
 
+
+# BUTTON FUNCTIONS DOWN >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # connect and open connection
 def connect():
@@ -71,7 +78,9 @@ def connect():
         pass
 
     try:
-        link = txfer.SerialTransfer('COM2')
+        print("inside connect" + com)
+        link = txfer.SerialTransfer(com)
+
         print("link available")
         progressbar.configure(progress_color='#5cffb6')
         progressbar.start()
@@ -156,19 +165,19 @@ def clear_all():  # clear all fields
 
 # button functions up>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-# begin of row increment
-iv = increment_row()
-# COM SELECTION DROP DOWN MENU FRAME###############################################
+# COM SELECTION DROP DOWN MENU FRAME #############################################
 
 frame_com_sel = customtkinter.CTkFrame(root, border_width=1)
 frame_com_sel.grid(row=0, column=0, padx=10,
                    pady=5, sticky="nsew")
+com_sel_drop = customtkinter.CTkOptionMenu(frame_com_sel, values=avail_port, command=com_pick)
+com_sel_drop.grid(row=0, column=0, padx=10,
+                  pady=5, sticky="nsew")
+com_sel_drop.set("Select Arduino Board")
 
-com_sel_drop = customtkinter.CTkOptionMenu(frame_com_sel,)
-
-# connect frame ########################################################
+# CONNECT FRAME ########################################################
 frame_connect = customtkinter.CTkFrame(root, border_width=1)
-frame_connect.grid(row=iv.row_no, column=0, padx=10,
+frame_connect.grid(row=1, column=0, padx=10,
                    pady=5, sticky="nsew")
 
 connect_button = customtkinter.CTkButton(frame_connect, width=75,
@@ -181,7 +190,7 @@ connect_button.grid(row=0, column=0, sticky="W",
 
 # progress bar
 
-progressbar = customtkinter.CTkProgressBar(frame_connect, orientation='horizonntal',
+progressbar = customtkinter.CTkProgressBar(frame_connect, orientation='horizontal',
                                            indeterminate_speed=.5,
                                            determinate_speed=0.5,
                                            mode="indeterminate",
@@ -191,9 +200,9 @@ progressbar.grid(row=0, column=1, padx=10, pady=10)
 progressbar.set(0)
 ######################################################################
 
-# Inputs Frame ########################################################
+# INPUT FRAME ########################################################
 frame_inputs = customtkinter.CTkFrame(root, border_width=1)
-frame_inputs.grid(row=1,
+frame_inputs.grid(row=2,
                   column=0,
                   padx=10,
                   pady=5,
@@ -232,10 +241,11 @@ button_clear_all = customtkinter.CTkButton(frame_inputs, width=75, height=25,
 button_clear_all.grid(row=row_no + 1, column=0, rowspan=2, sticky="E", padx=10, pady=5)
 # print("yes")
 ########################################################################################
-# frame error messages##################################################################
+
+# FRAME ERROR #########################################################################
 
 frame_error = customtkinter.CTkFrame(root, border_width=1)
-frame_error.grid(row=2, column=0, padx=10, pady=10, sticky="nsew")
+frame_error.grid(row=3, column=0, padx=10, pady=10, sticky="nsew")
 
 # frame_error title
 label_error = customtkinter.CTkLabel(frame_error, text_color='#ebcf00', text="Notifications:")
@@ -257,89 +267,3 @@ try:
     print("LINK closed")
 except (txfer.InvalidSerialPort, tk.TclError, NameError):
     pass
-
-#######to
-# consider############
-'''def send_input(index):  # send inputs selected
-
-    # refresh frame_error everytime this func is called
-    children = frame_error.winfo_children()
-    for widget in children[1:]:
-        widget.destroy()
-    input_error_message = customtkinter.CTkLabel(frame_error)
-
-    # initialise error msg
-    error_msg = ""
-
-    # try except errors
-    try:
-        input_error_message.configure(text="")
-        value = float(to_send[index].get())
-        print(inputs[index] + ":", value)
-        # Here commands to send the value to Arduino
-        value_bytes = struct.pack('f', value)
-        # value_bytes= value.to_bytes(2, byteorder='big')
-        print(value_bytes)
-        print(to_send)
-
-    except ValueError:
-        input_error_message.configure(text="")
-        error_msg = "Invalid format in " + inputs[index]
-
-        input_error_message.grid(row=1, column=0, sticky="W", padx=5, pady=5)
-        # input_error_message.destroy()
-        input_error_message.configure(text=error_msg)
-        # to correct afterward
-        value = 0.0
-        value_bytes = struct.pack('f', value)
-        print(value_bytes)
-
-        # ser.write(value_bytes)'''
-
-'''
-def send_all():  # send all inputs at once
-
-    children = frame_error.winfo_children()
-    for widget in children[1:]:
-        widget.destroy()
-
-    send_all_error_msg = ""
-    error_count = 0
-
-    for j, entry_field in enumerate(to_send):
-        try:
-            send_size = 0
-            print(send_size)
-            value = float(entry_field.get())
-
-            value_size = link.tx_obj(value, send_size) - send_size
-            send_size += value_size
-
-
-
-            while not link.available():
-                if link.status < 0:
-                    if link.status == txfer.CRC_ERROR:
-                        print("ERROR: CRC_ERROR")
-                    elif link.status == txfer.PAYLOAD_ERROR:
-                        print('ERROR: PAYLOAD_ERROR')
-                    elif link.status == txfer.STOP_BYTE_ERROR:
-                        print('ERROR: STOP_BYTE_ERROR')
-                    else:
-                        print('ERROR: {}'.format(link.status))
-            # ser.write(value_bytes)
-            threading.Thread(target=send_data, args=(value,inputs[index]))
-            print(inputs[j] + ':', value)
-
-
-        except ValueError:
-            value = 0
-
-            send_all_error_msg = "Invalid format in " + inputs[j]
-            error_count += 1
-            send_all_input_error_message = tk.Label(frame_error)
-            send_all_input_error_message.config(text=send_all_error_msg, fg="red")
-            send_all_input_error_message.grid(row=error_count, column=0, sticky="w", padx=10, pady=5)
-            print(value)
-    # error_count=0
-'''
