@@ -17,7 +17,7 @@ root = customtkinter.CTk()
 root.title("Testing input")
 
 # change according to inputs
-inputs = np.array(["yellow", "blue", "red", "white"])
+inputs = np.array(["Input 1", "Input 2", "Input 3", "Input 4"])
 print(inputs)
 
 # get inputs from entry fields
@@ -32,16 +32,28 @@ error_message_matrix = []
 # global conn_avail
 conn_avail = None
 
+
 # searching for all available com ports>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+def searching_arduino_port():
+    ports = serial.tools.list_ports.comports()  # finding ports
+    avail_port = []  # ports matrix
 
-ports = serial.tools.list_ports.comports()  # finding ports
-avail_port = []  # ports dictionary
+    # try:
+    for port in sorted(ports):
+        if "Arduino" in port.description:
+            avail_port.append(port.description)
 
-for port in sorted(ports):
-    if "Arduino" in port.description:
-        avail_port.append(port.description)
+    print(avail_port)
+    if len(avail_port) == 0:
+        com_sel_drop.set("No Ports")
 
-print(avail_port)
+    else:
+        com_sel_drop.configure(values=avail_port)
+
+    return avail_port
+    # except IndexError:
+    #     com_sel_drop.configure(values=["No Ports"])
+
 
 com = None
 
@@ -88,9 +100,11 @@ def connect():
         conn_avail = True
 
 
-    except txfer.InvalidSerialPort:
+    except (txfer.InvalidSerialPort, TypeError):
         conn_avail = False
+        progressbar.stop()
         print("NO LINK")
+        com_sel_drop.configure(values=["No Ports"])
 
     if conn_avail:
 
@@ -109,6 +123,7 @@ def connect():
                                                         text=connection_error_text)
         connection_error_label.grid(row=1, column=0, sticky='W', padx=10, pady=5)
         update_send_all_button_state('disabled')
+        com_sel_drop.configure(values=["No Ports"])
 
 
 def update_send_all_button_state(state):
@@ -170,10 +185,19 @@ def clear_all():  # clear all fields
 frame_com_sel = customtkinter.CTkFrame(root, border_width=1)
 frame_com_sel.grid(row=0, column=0, padx=10,
                    pady=5, sticky="nsew")
-com_sel_drop = customtkinter.CTkOptionMenu(frame_com_sel, values=avail_port, command=com_pick)
+
+com_sel_drop = customtkinter.CTkOptionMenu(frame_com_sel, values=[""], command=com_pick, )
 com_sel_drop.grid(row=0, column=0, padx=10,
                   pady=5, sticky="nsew")
-com_sel_drop.set("Select Arduino Board")
+com_sel_drop.set("Select Arduino Board ")
+
+# REFRESH BUTTON
+
+refresh_button = customtkinter.CTkButton(frame_com_sel, text="Refresh", command=searching_arduino_port,
+                                         width=75,
+                                         height=25, )
+refresh_button.grid(row=0, column=1, padx=10,
+                    pady=5, sticky="nsew")
 
 # CONNECT FRAME ########################################################
 frame_connect = customtkinter.CTkFrame(root, border_width=1)
