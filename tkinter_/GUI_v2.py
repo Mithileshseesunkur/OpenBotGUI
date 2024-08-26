@@ -4,7 +4,7 @@ import numpy as np
 import serial.tools.list_ports
 
 from pySerialTransfer import pySerialTransfer as txfer
-
+print("This is code of ruj")
 # set the theme and color options
 
 customtkinter.set_appearance_mode("dark")  # system(default), light, dark
