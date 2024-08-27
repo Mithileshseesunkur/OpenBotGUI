@@ -2,11 +2,17 @@
 import customtkinter as CTK
 
 class my_input_frame(CTK.CTkFrame):
+
+    input_length:int
+    entries:list=[]
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
         # add widgets onto the frame
         self.inputs = ["input_1", "input_2", "input_3", "input_4"]
+        self.input_length=len(self.inputs)
+
+        
         
 
         for label_no in range(len(self.inputs)):
@@ -15,23 +21,27 @@ class my_input_frame(CTK.CTkFrame):
 
             self.entry = CTK.CTkEntry(self)
             self.entry.grid(row=label_no, column=1, pady=20, padx=20)
-            #self.entries.append(self.entry)
+    
+            self.entries.append(self.entry)
+    
 
 class my_send_button_frame(CTK.CTkFrame):
+    
+    
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.entries = []
-        self.inputs=
+        
+        #self.inputs=
 
         #self.input_frame = my_input_frame
 
-        def print_inputs(self):
+        def print_inputs():
 
-            for entry_no in len())
-
-            for entry_value in self.input_frame.entry:
-                print(entry_value)
+            for entry_no in range(0,my_input_frame.input_length):
+                value=my_input_frame.entries.get()
+                print("input_" + str(entry_no)+f": {value}")
+                
 
         self.send_button = CTK.CTkButton(self, text="Send inputs", command=print_inputs)
         self.send_button.grid(row=0, column=0, pady=20, padx=20)
