@@ -26,5 +26,5 @@ class my_input_frame(CTK.CTkFrame):
                 value = input_frame.entries[entry_no].get()
                 print(f"input_{entry_no + 1}: {value}")
 
-        self.send_button = CTK.CTkButton(self, text="Send inputs", command=print_inputs)
+        self.send_button = CTK.CTkButton(self, text="Send inputs", command=print_values)
         self.send_button.grid(row=label_no+1, column=0, pady=20, padx=20)

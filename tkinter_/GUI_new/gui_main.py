@@ -1,5 +1,6 @@
 from input_frame import my_input_frame
 import customtkinter as CTK
+# ./run_app.sh
 
 # class my_input_frame(CTK.CTkFrame):
 
