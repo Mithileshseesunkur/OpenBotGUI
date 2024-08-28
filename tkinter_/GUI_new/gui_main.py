@@ -1,4 +1,5 @@
 from input_frame import my_input_frame
+from notifications import my_notifications_frame
 
 import customtkinter as CTK
 
@@ -12,6 +13,10 @@ class App(CTK.CTk):
         #inputs frame
         self.gui_inputs_frame = my_input_frame(master=self)
         self.gui_inputs_frame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
+
+        #notif  frame
+        self.gui_notif_frame = my_notifications_frame(master=self)
+        self.gui_notif_frame.grid(row=1, column=0, padx=20, pady=20, sticky="nsew")
 
        
 

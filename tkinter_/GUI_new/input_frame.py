@@ -4,11 +4,9 @@ import numpy as np
 class my_input_frame(CTK.CTkFrame):
     input_length: int
     entries=[]
+    notif:list
+    values_incoming:bool=False
     
-    
-
-    
-
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
@@ -27,6 +25,8 @@ class my_input_frame(CTK.CTkFrame):
         
         #send off values at once
         def send_values():
+
+            self.values_incoming=True
             self.value_get=[]
             # self.entries= np.zeros(self.input_length)
             # print(self.entries)
@@ -34,31 +34,33 @@ class my_input_frame(CTK.CTkFrame):
             try:
                 for entry_no in range(0,self.input_length):
                     
-                    self.value=self.entries[entry_no].get()
-                    if self.value=="":
+                    self.value=self.entries[entry_no].get() #get values from entries by order
+                    if self.value=="": # nothing=0
                         self.value=0
-                    self.value_get.append(self.value)
+                    self.value_get.append(self.value) #appendd entries in value_get
                     print(f"input_{entry_no + 1}: {self.value_get[entry_no]}")
                     #put send function here
 
                 print(self.value_get)
-                notif=[float(x) for x in self.value_get]
-                print(notif)
-                return self.entries    
+                self.notif=[float(x) for x in self.value_get]
+                print(self.notif)
+                return self.notif    
             
             except AttributeError:
                 pass
 
             except ValueError:
 
-                notif="Incorrect type of input"
-                print(notif)                    
-                return notif
-        
+                self.notif="Incorrect type of input"
+                print(self.notif)                    
+                return self.notif
+            
+        # send all button
         self.send_button = CTK.CTkButton(self, text="Send inputs", command=send_values)
         self.send_button.grid(row=label_no+1, column=0, pady=20, padx=20,sticky="w")
 
-    
+    def get_notif(self):
+        return self.notif
         
 
         

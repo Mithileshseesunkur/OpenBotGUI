@@ -8,6 +8,7 @@ print("This is code of ruj")
 # set the theme and color options
 
 customtkinter.set_appearance_mode("dark")  # system(default), light, dark
+
 customtkinter.set_default_color_theme("blue")
 
 # MAIN#############################
