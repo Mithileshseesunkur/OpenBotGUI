@@ -1,21 +1,25 @@
 import customtkinter as CTK
 from input_frame import my_input_frame
 
+
 class my_notifications_frame(CTK.CTkFrame):
     
     height="400"
     width="800"
-    #notif= my_input_frame.notif
 
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.notif = my_input_frame.get_notif()
+        self.gui_inputs_frame = my_input_frame(master=self)
 
-        for label in self.notif:
+        if 
 
-            self.label = CTK.CTkLabel(self, text=self.notif[label])
-            self.label.grid(row=label, column=0, pady=20, padx=20)
+        self.notif=self.gui_inputs_frame.send_values()
+        
+
+        for i, value in enumerate(self.notif):
+            label = CTK.CTkLabel(self, text=str(value))
+            label.grid(row=i, column=0, padx=20, pady=20)
 
 
 
