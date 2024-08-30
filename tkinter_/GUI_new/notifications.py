@@ -7,19 +7,21 @@ class my_notifications_frame(CTK.CTkFrame):
     height="400"
     width="800"
 
-    def __init__(self, master, **kwargs):
+    def __init__(self, master,notif=None, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.gui_inputs_frame = my_input_frame(master=self)
+        # self.gui_inputs_frame = my_input_frame(master=self)
 
-     
-
-        self.notif=self.gui_inputs_frame.send_values()
+        # self.notif=self.gui_inputs_frame.send_values()
         
-
-        for i, value in enumerate(self.notif):
-            label = CTK.CTkLabel(self, text=str(value))
-            label.grid(row=i, column=0, padx=20, pady=20)
+        if notif is not None:
+            if isinstance(notif, list):
+                for i, value in enumerate(notif):
+                    label = CTK.CTkLabel(self, text=str(value))
+                    label.grid(row=i, column=0, padx=20, pady=20)
+            else:
+                label = CTK.CTkLabel(self, text=str(notif))
+                label.grid(row=0, column=0, padx=20, pady=20)
 
 
 
