@@ -12,7 +12,7 @@ class my_notifications_frame(CTK.CTkFrame):
 
         self.gui_inputs_frame = my_input_frame(master=self)
 
-        if 
+     
 
         self.notif=self.gui_inputs_frame.send_values()
         
