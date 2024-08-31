@@ -23,6 +23,12 @@ class my_input_frame(CTK.CTkFrame):
 
             self.entries.append(self.entry)
         
+        # Update the frame to ensure it's drawn
+        self.update_idletasks()
+
+        # Get the frame's size
+        self.width = self.winfo_width()
+        self.height = self.winfo_height()
         
             
         # send all button
