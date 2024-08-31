@@ -9,9 +9,10 @@ class my_notifications_frame(CTK.CTkFrame):
 
     def __init__(self, master,notif=None, **kwargs):
         super().__init__(master, **kwargs)
+        
 
         self.label = CTK.CTkLabel(self, text="Notifications",text_color="#f5d969")
-        self.label.grid(row=0, column=0, padx=20, pady=20,sticky="w")
+        self.label.grid(row=0, column=0, padx=20,pady=(10,0),sticky="w")
         
         if notif is not None:
             if isinstance(notif, list):
@@ -20,7 +21,7 @@ class my_notifications_frame(CTK.CTkFrame):
                     label.grid(row=i+1, column=0, padx=20, pady=20)
             else:
                 label = CTK.CTkLabel(self, text=str(notif))
-                label.grid(row=1, column=0, padx=20, pady=20)
+                label.grid(row=1, column=0, padx=(10,0), pady=(10,10))
 
 
 

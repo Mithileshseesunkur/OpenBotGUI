@@ -1,11 +1,10 @@
 import customtkinter as CTK
-import numpy as np
+
 
 class my_input_frame(CTK.CTkFrame):
     input_length: int
     entries=[]
     notif:list
-    values_incoming:bool=False
     
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
@@ -17,10 +16,10 @@ class my_input_frame(CTK.CTkFrame):
         #creatinf labels and entries
         for label_no in range(0,len(self.inputs)):
             self.label = CTK.CTkLabel(self, text=self.inputs[label_no])
-            self.label.grid(row=label_no, column=0, pady=20, padx=20)
+            self.label.grid(row=label_no, column=0, pady=(10,10), padx=(10,10))
 
             self.entry = CTK.CTkEntry(self)
-            self.entry.grid(row=label_no, column=1, pady=20, padx=20)
+            self.entry.grid(row=label_no, column=1, pady=(10,10), padx=(10,10))
 
             self.entries.append(self.entry)
         
@@ -28,7 +27,7 @@ class my_input_frame(CTK.CTkFrame):
             
         # send all button
         self.send_button = CTK.CTkButton(self, text="Send inputs", command=None)
-        self.send_button.grid(row=label_no+1, column=0, pady=20, padx=20,sticky="w")
+        self.send_button.grid(row=label_no+1, column=1, pady=20, padx=20,sticky="w")
     
     #functions must be outside of __init__ 
     #send off values at once

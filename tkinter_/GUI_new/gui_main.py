@@ -8,7 +8,7 @@ class App(CTK.CTk):
         super().__init__()
 
         self.title("_OpenBot_")
-        self.geometry("500x800")
+        self.geometry("1000x800")
 
         #inputs frame
         self.gui_inputs_frame = my_input_frame(master=self)
@@ -21,12 +21,13 @@ class App(CTK.CTk):
 
         #notif  frame
         self.gui_notif_frame = my_notifications_frame(master=self)
+        #self.gui_notif_frame.configure(hei)
         self.gui_notif_frame.grid(row=1, column=0, padx=20, pady=0, sticky="nsew")
 
         # Bind the "Send inputs" button press event to the update_notif method
         self.gui_inputs_frame.send_button.configure(command=self.update_notif)
 
-    #update notif frame
+    #update notif framepip
     def update_notif(self):
         notif = self.gui_inputs_frame.send_values()
 
