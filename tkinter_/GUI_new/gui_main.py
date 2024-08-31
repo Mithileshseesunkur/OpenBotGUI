@@ -26,6 +26,7 @@ class App(CTK.CTk):
         # Bind the "Send inputs" button press event to the update_notif method
         self.gui_inputs_frame.send_button.configure(command=self.update_notif)
 
+    #update notif frame
     def update_notif(self):
         notif = self.gui_inputs_frame.send_values()
 
