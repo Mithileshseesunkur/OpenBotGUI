@@ -1,4 +1,5 @@
 import customtkinter as CTK
+import can
 
 
 class my_input_frame(CTK.CTkFrame):
@@ -54,6 +55,7 @@ class my_input_frame(CTK.CTkFrame):
             print(self.value_get)
             self.notif=[float(x) for x in self.value_get]
             print(self.notif)
+            
             return self.notif    
         
         except AttributeError:
@@ -65,9 +67,20 @@ class my_input_frame(CTK.CTkFrame):
             print(self.notif)                    
             return self.notif
 
-    def get_notif(self):
-        print(self.notif)
-        return self.notif
+        self.send_recv()
+
+    def send_recv(self):
+        
+        self.bus1 = can.interface.Bus(channel='test1', interface='virtual')
+        self.bus2 = can.interface.Bus(channel='test1', interface='virtual')
+
+        self.msg1 = can.Message(arbitration_id=0xabcde, data=[1,2,3])
+        self.bus1.send(self.msg1)
+        self.recv1 = self.bus2.recv()
+        self.send_recv_msg=[self.msg1, self.recv1]
+
+        return self.send_recv_msg
+
         
 
         

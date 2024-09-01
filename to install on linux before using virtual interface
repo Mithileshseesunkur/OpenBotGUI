@@ -1,0 +1,8 @@
+(.venv) mithilesh@Kaizen:~/OpenBot/OpenBotGUI$ sudo modprobe vcan
+[sudo] password for mithilesh: 
+(.venv) mithilesh@Kaizen:~/OpenBot/OpenBotGUI$ sudo ip link add de
+v vcan0 type vcan
+RTNETLINK answers: File exists
+(.venv) mithilesh@Kaizen:~/OpenBot/OpenBotGUI$ sudo ip link set up vcan0
+(.venv) mithilesh@Kaizen:~/OpenBot/OpenBotGUI$ 
+
