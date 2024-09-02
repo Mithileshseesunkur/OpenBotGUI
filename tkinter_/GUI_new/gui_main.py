@@ -1,7 +1,8 @@
-from input_frame import my_input_frame
+#from input_frame import my_input_frame
 from notifications import my_notifications_frame
-from transmitting import my_transmitting_frame
-from receiving import my_receiving_frame
+#from transmitting import my_transmitting_frame
+#from receiving import my_receiving_frame
+from unit_tab import my_tabs
 
 import customtkinter as CTK
 
@@ -13,7 +14,12 @@ class App(CTK.CTk):
         self.title("_OpenBot_")
         self.geometry("1000x800")
 
-        #inputs frame
+        self.tab_view = my_tabs(master=self,height=500,width=800)
+        self.tab_view.grid(row=0, column=0, padx=(20,20), pady=20,sticky="w")
+
+
+
+    '''    #inputs frame
         self.gui_inputs_frame = my_input_frame(master=self)
         self.gui_inputs_frame.grid(row=0, column=0, padx=20, pady=20, sticky="nsew")
 
@@ -87,9 +93,9 @@ class App(CTK.CTk):
             widget.destroy()
         self.gui_notif_frame = my_transmitting_frame(master=self, msg=msg)
         self.gui_notif_frame.grid(row=1, column=0, padx=20, pady=0, sticky="nsew")
-
+        
     def update_receiving(self):
-        pass
+        pass'''
 
 
 
